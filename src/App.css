@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+.book {
+  width: 500px;
+}
+.book-title,
+.book-authors {
+  font-size: 0.6em;
+}
+.book-title {
+  margin-top: 10px;
+}
+.book-authors {
+  color: #999;
+  font-size: 0.2em;
+}
+
+.books-grid {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.books-grid li {
+  padding: 10px 15px;
+  text-align: left;
+}
