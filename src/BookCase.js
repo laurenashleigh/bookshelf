@@ -1,9 +1,9 @@
 import React from 'react';
-import allBooks from './data';
 
-const Book = () => {
-  const books = allBooks;
-  const booksList = books.map((book) =>
+
+const Book = (props) => {
+  const book = props;
+  return (
     <div className="book">
       <div
         className="book-image"
@@ -12,39 +12,45 @@ const Book = () => {
           height: 500,
           backgroundImage: `url(${book.imageLinks.thumbnail})`
         }}
-
       />
       <div className="book-title">
         <h2>{book.title}</h2>
         <p>{book.subtitle}</p>
       </div>
-      <div className="book-image">
-
-      </div>
       <div className="book.authors">
         <p>{book.authors}</p>
       </div>
-
     </div>
-  )
-  return (
-    <div>
-      {booksList}
-    </div>
-
   );
 }
 
-export default Book;
 
-export const BookShelf = () => {
+export const BookShelf = (props) => {
+  const { shelf, books } = props;
+  const booksOnThisShelf = Object.values(books).filter(book => book.shelf === shelf.key);
   return (
     <div>
-      <h2>Bookshelf Title</h2>
+      <h2>{shelf.name}</h2>
       <div>
-        <ol className="books-grid">
-          <Book />
+        <ol>
+          {booksOnThisShelf.map(book => (
+            <Book key={book.id} book={book} />
+          ))}
         </ol>
+      </div>
+    </div>
+  )
+};
+
+export const BookCase = (props) => {
+  const { bookshelves, books } = props;
+  return (
+    <div className="list-books-content">
+      <h2>My Reads</h2>
+      <div>
+        {bookshelves.map(shelf => (
+          <BookShelf key={shelf.key} shelf={shelf} books={books} />
+        ))}
       </div>
     </div>
   )
