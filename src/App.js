@@ -1,38 +1,64 @@
 import React, { Component } from 'react';
+import { Route, Link } from 'react-router-dom';
+import * as BooksAPI from './BooksAPI';
 import './App.css';
 import { BookCase } from './BookCase';
-import allBooks from './data';
 
 class App extends Component {
   bookshelves = [
     { key: 'currentlyReading', name: 'Currently Reading' },
     { key: 'wantToRead', name: 'Want to Read' },
     { key: 'read', name: 'Have Read' },
-  ]
+  ];
 
   state = {
-    books: allBooks,
-  }
+    books: [],
+  };
 
   componentDidMount = () => {
-    console.log(this.state)
-  }
+    BooksAPI.getAll().then(books => {
+      this.setState({ books: books });
+    })
+  };
+
+  moveBook = (book, shelf) => {
+    BooksAPI.update(book, shelf);
+
+    let updatedBooks = [];
+    updatedBooks = this.state.books.filter(b => b.id !== book.id);
+
+    if (shelf !== 'none') {
+      book.shelf = shelf;
+      updatedBooks = updatedBooks.concat(book);
+    }
+
+    this.setState({
+      myBooks: updatedBooks,
+    });
+  };
 
   render() {
+    const { books } = this.state;
     return (
       <div className="App" >
-        <header className="App-header">
-          <h1>Bookshelf</h1>
-        </header>
-        <BookCase bookshelves={this.bookshelves} books={this.state.books} />
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Add book
-          </a>
+        <Route exact path="/" render={() => (
+          <div>
+            <header className="App-header">
+              <h1>Bookshelf</h1>
+            </header>
+            <BookCase bookshelves={this.bookshelves} books={books} onMove={this.moveBook} />
+            <div className="open-search">
+              <Link to="search">
+                <button>Search for a book</button>
+              </Link>
+            </div>
+          </div>
+        )}
+        />
+        <Route path="/search" render={() => (
+          <div></div>
+        )}
+        />
       </div>
     );
   }
