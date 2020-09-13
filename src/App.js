@@ -3,60 +3,95 @@ import { Route, Link } from 'react-router-dom';
 import * as BooksAPI from './BooksAPI';
 import './App.css';
 import { BookCase } from './BookCase';
+import SearchPage from './SearchPage';
 
+const bookshelves = [
+  { key: 'currentlyReading', name: 'Currently Reading' },
+  { key: 'wantToRead', name: 'Want to Read' },
+  { key: 'read', name: 'Have Read' },
+];
 class App extends Component {
-  bookshelves = [
-    { key: 'currentlyReading', name: 'Currently Reading' },
-    { key: 'wantToRead', name: 'Want to Read' },
-    { key: 'read', name: 'Have Read' },
-  ];
 
   state = {
     books: [],
+    searchBooks: [],
+    error: false,
   };
 
   componentDidMount = () => {
     BooksAPI.getAll().then(books => {
       this.setState({ books: books });
     })
+      .catch(err => {
+        console.log(err);
+        this.setState({ error: true });
+      })
   };
 
   moveBook = (book, shelf) => {
-    BooksAPI.update(book, shelf);
-
-    let updatedBooks = [];
-    updatedBooks = this.state.books.filter(b => b.id !== book.id);
+    BooksAPI.update(book, shelf).catch(err => {
+      console.log(err);
+      this.setState({ error: true });
+    });
 
     if (shelf !== 'none') {
+      this.setState(prevState => ({
+        books: prevState.books.filter(b => b.id !== book.id)
+      }));
+    } else {
       book.shelf = shelf;
-      updatedBooks = updatedBooks.concat(book);
+      this.setState(prevState => ({
+        books: prevState.books.filter(b => b.id !== book.id).concat(book)
+      }));
     }
-
-    this.setState({
-      myBooks: updatedBooks,
-    });
   };
 
+  searchForBooks = query => {
+    if (query.length > 0) {
+      BooksAPI.search(query).then(books => {
+        if (books.error) {
+          this.setState({ searchBooks: [] });
+        } else {
+          this.setState({ searchBooks: books });
+        }
+      });
+    } else {
+      this.setState({ searchBooks: [] });
+    }
+  };
+  resetSearch = () => {
+    this.setState({ searchBooks: [] });
+  }
+
+  refreshPage = () => {
+    window.location.reload();
+  }
+
   render() {
-    const { books } = this.state;
+    const { books, searchBooks, error } = this.state;
+    if (error) {
+      return <div>An error has occurred, please try again later.</div>
+    }
     return (
       <div className="App" >
+        <div>
+          <header className="App-header">
+            <h1>Bookshelf</h1>
+          </header>
+        </div>
         <Route exact path="/" render={() => (
           <div>
-            <header className="App-header">
-              <h1>Bookshelf</h1>
-            </header>
-            <BookCase bookshelves={this.bookshelves} books={books} onMove={this.moveBook} />
-            <div className="open-search">
+            <div>
               <Link to="search">
-                <button>Search for a book</button>
+                <button className="open-search">Search for a book</button>
               </Link>
             </div>
+            <BookCase bookshelves={bookshelves} books={books} onMove={this.moveBook} />
           </div>
         )}
         />
         <Route path="/search" render={() => (
-          <div></div>
+          <SearchPage books={books} searchBooks={searchBooks} onSearch={this.searchForBooks} onMove={this.moveBook} onResetSearch={this.resetSearch} />
         )}
         />
       </div>

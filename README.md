@@ -1,3 +1,14 @@
+The My Reads App allows you to track books and place them on one of three bookshelves.
+Each shelf corresponds to one of the following
+
+Currently Reading
+Want to Read
+Have Read
+The app also lets you search for books and add them to one of the three category shelves.
+
+Lastly the app allows you to move books between shelves.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

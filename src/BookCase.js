@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 
-const Book = (props) => {
-  const { book, shelf, onMove } = props;
+export const Book = ({ book, shelf, onMove }) => {
   return (
     <div className="book">
       <div
@@ -10,7 +9,7 @@ const Book = (props) => {
         style={{
           width: 140,
           height: 200,
-          backgroundImage: `url(${book.imageLinks.thumbnail})`
+          backgroundImage: `url(${book.imageLinks ? book.imageLinks.thumbnail : 'icons/book-placeholder.svg'})`,
         }}
       />
       <div className="book-title">
@@ -18,7 +17,7 @@ const Book = (props) => {
         <p>{book.subtitle}</p>
       </div>
       <div className="book.authors">
-        <p>{book.authors}</p>
+        <p>{book.authors ? book.authors.join(', ') : 'Unknown Author'}</p>
       </div>
       <BookshelfChanger onMove={onMove} book={book} shelf={shelf} />
     </div>
@@ -36,8 +35,8 @@ class BookshelfChanger extends Component {
   render() {
     return (
       <div className="book-shelf-changer">
-        <select value={this.state.value} onChange={this.handleChange}>
-          <option value="move" disabled>
+        <select value={this.state.value} onChange={this.handleChange} className="select-bookshelf">
+          <option value="move">
             Move book to...
           </option>
           <option value="currentlyReading">Currently reading</option>
@@ -51,8 +50,7 @@ class BookshelfChanger extends Component {
 }
 
 
-export const BookShelf = (props) => {
-  const { shelf, books, onMove } = props;
+export const BookShelf = ({ shelf, books, onMove }) => {
   const booksOnThisShelf = Object.values(books).filter(book => book.shelf === shelf.key);
   return (
     <div className="bookshelf">
@@ -60,7 +58,7 @@ export const BookShelf = (props) => {
       <div className="bookshelf-books">
         <ol className="books-grid">
           {booksOnThisShelf.map(book => (
-            <Book key={book.id} book={book} onMove={onMove} />
+            <Book key={book.id} book={book} onMove={onMove} shelf={shelf.key} />
           ))}
         </ol>
       </div>
@@ -83,3 +81,5 @@ export const BookCase = (props) => {
     </div>
   )
 }
+
+export default Book;
