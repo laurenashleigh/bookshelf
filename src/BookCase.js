@@ -34,7 +34,7 @@ class BookshelfChanger extends Component {
   }
   render() {
     return (
-      <div className="book-shelf-changer">
+      <div>
         <select value={this.state.value} onChange={this.handleChange} className="select-bookshelf">
           <option value="move">
             Move book to...
