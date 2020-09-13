@@ -34,16 +34,17 @@ class App extends Component {
       this.setState({ error: true });
     });
 
+    let updatedBooks = [];
+    updatedBooks = this.state.books.filter(b => b.id !== book.id);
+
     if (shelf !== 'none') {
-      this.setState(prevState => ({
-        books: prevState.books.filter(b => b.id !== book.id)
-      }));
-    } else {
       book.shelf = shelf;
-      this.setState(prevState => ({
-        books: prevState.books.filter(b => b.id !== book.id).concat(book)
-      }));
+      updatedBooks = updatedBooks.concat(book);
     }
+
+    this.setState({
+      books: updatedBooks,
+    });
   };
 
   searchForBooks = query => {
